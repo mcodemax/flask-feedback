@@ -4,6 +4,8 @@ from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Feedback
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
+
 
 app = Flask(__name__)
 CORS(app) #https://flask-cors.readthedocs.io/en/latest/
