@@ -1,11 +1,12 @@
 """Flask Feedback App."""
 
 from flask import Flask, request, render_template, redirect, flash, session
+import flask
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Feedback
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
-from forms import AddLoginForm, AddUserForm
+from forms import AddLoginForm, AddUserForm, AddFeedbackForm, EditFeedbackForm
 
 
 app = Flask(__name__)
@@ -57,11 +58,6 @@ def add_user_form():
             
             return redirect(f"/users/{user.username}")
 
-             # try:
-            #     user = User.register(**data)
-            # except:
-            #     flash('User already exists')
-            #     return redirect('/register')
     else:
         
         return render_template("add_user.html", form=form)
@@ -101,9 +97,57 @@ def login():
         
         return render_template("login.html", form=form)
     
+@app.route('/feedback/<int:feedback_id>/update', methods=["GET", "POST"])
+def edit_feedback(feedback_id):
 
-# @app.route('users/<username>')
-# def 
+    
+    username = session.get('username', None)
+    feedback_to_edit = Feedback.query.get(feedback_id)
+
+    form = EditFeedbackForm(obj=feedback_to_edit)
+
+    # return render_template('edit_feedback.html', username=username, feedback_to_edit=feedback_to_edit, form=form)
+
+    if username != feedback_to_edit.user.username:
+        flash(f"You're not allowed to edit this feedback!")
+        return redirect('/')
+    
+    if form.validate_on_submit():
+        data = {field: val for field, val in form.data.items() if field != "csrf_token"}
+        #stacked overflow:iterating over form fields in flask
+        
+        feedback_to_edit.title = data['title']
+
+        feedback_to_edit.content = data['content']
+        
+        db.session.commit()   
+        
+        return redirect(f"/users/{username}")
+
+    else:
+        
+        return render_template("edit_feedback.html", form=form, feedback_id=feedback_id)
+    
+
+# if request.method == 'GET'
+
+@app.route('/feedback/<int:feedback_id>/delete',methods=["POST"])
+def delete_feedback(feedback_id):
+    
+    username = session.get('username', None)
+    feedback_to_del = Feedback.query.get(feedback_id)
+
+    user = User.query.filter_by(username=username).first()
+    
+    if(feedback_to_del.user.username == username):
+        #delete the feedback
+        db.session.delete(feedback_to_del)
+        db.session.commit()
+
+        return render_template('loggedinuser_info.html', user=user)
+    else:
+        flash("You aren't allowed to be deleting this post")
+        return redirect('/')
 
 @app.route('/logout')
 def logout():

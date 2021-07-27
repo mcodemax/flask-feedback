@@ -3,18 +3,48 @@
 {% block title %} <h3>Dis Secrit</h3> {% endblock %}
 
 {% block content %}
-<div>
-    Username: {{user.username}}
-</div>
-<div>
-    Email: {{user.email}}
-</div>
-<div>
-    First Name: {{user.first_name}}
-</div>
-<div>
-    Last Name: {{user.last_name}}
-</div>
 
+<section>
+    <div>
+        Username: {{user.username}}
+    </div>
+    <div>
+        Email: {{user.email}}
+    </div>
+    <div>
+        First Name: {{user.first_name}}
+    </div>
+    <div>
+        Last Name: {{user.last_name}}
+    </div>
+</section>
+
+<br>
+{% if user.feedback %}
+<section id="feedback-list">
+    Feedback List:
+    <div>
+        {% for feedback in user.feedback %}
+            <div>
+                Id: {{feedback.id}}
+            </div>
+            <div>
+                Title: {{feedback.title}}
+            </div>
+            <div>
+                Content: {{feedback.content}}
+            </div>
+                <form action="/feedback/{{feedback.id}}/update" method="GET">
+                    <button type="submit">EDIT</button>
+                </form>
+                <form action="/feedback/{{feedback.id}}/delete" method="POST">
+                    <button type="submit">DELETE</button>
+                </form>
+            <br>
+            <br>
+        {% endfor %}
+    </div>    
+</section>
+{% endif %}
 
 {% endblock %}

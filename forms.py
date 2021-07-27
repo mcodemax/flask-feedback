@@ -29,3 +29,21 @@ class AddLoginForm(FlaskForm):
 
     password = PasswordField("Password", 
                         validators=[InputRequired(), Length(min=1)])                      
+
+class AddFeedbackForm(FlaskForm):
+    """Form for adding feedback"""
+    title = StringField("Title", 
+                        validators=[InputRequired(), Length(min=1, max=MAX_TITLE_LEN)])
+    
+    content = StringField("Content", 
+                        validators=[InputRequired(), Length(min=1)])
+    
+    #username will be got from session, id from another
+
+class EditFeedbackForm(FlaskForm):
+    """Form for editing feedback"""
+    title = StringField("Title", 
+                        validators=[InputRequired(), Length(min=1, max=MAX_TITLE_LEN)])
+    
+    content = StringField("Content", 
+                        validators=[InputRequired(), Length(min=1)])

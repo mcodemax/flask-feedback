@@ -32,3 +32,8 @@ db.session.add(user1)
 # Commit--otherwise, this never gets saved!
 db.session.commit()
 
+feedback1 = Feedback(title='Cool', content='The place was coolio', username='Fname1')
+feedback2 = Feedback(title='Unlit', content='The place was TRASH', username='Fname1')
+
+db.session.add_all([feedback1, feedback2])
+db.session.commit()
