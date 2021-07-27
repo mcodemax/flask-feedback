@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %} <h3>Dis Secrit</h3> {% endblock %}
+
+{% block content %}
+<div>
+    Username: {{user.username}}
+</div>
+<div>
+    Email: {{user.email}}
+</div>
+<div>
+    First Name: {{user.first_name}}
+</div>
+<div>
+    Last Name: {{user.last_name}}
+</div>
+
+
+{% endblock %}

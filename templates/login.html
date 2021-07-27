@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %} <h3>Add a user</h3> {% endblock %}
+{% block title %} <h3>Login</h3> {% endblock %}
 
 {% block content %} 
-
-
-<form action="/register" method="POST">
+    
+<form action="/login" method="POST">
 
     {{ form.hidden_tag() }} <!--add type=hidden form fields -->
     
@@ -24,10 +23,7 @@
     {% endfor %}
       
 
-    <button type="submit">Add</button>
-</form>
-<br>
-<form action="/login">
     <button type="submit">Login</button>
 </form>
+
 {% endblock %}
