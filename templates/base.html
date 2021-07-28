@@ -8,6 +8,11 @@
     <title>User Storage/Feedback App</title>
 </head>
 <body>
+    {% if logged_user %} 
+        <form action="/logout"><button type="submit">LOGOUT</button></form>
+        <form action="/users/{{logged_user}}"><button type="submit">My info</button></form>
+    {% endif %}
+
     {% for msg in get_flashed_messages() %}
         <p class="flash">{{ msg }}</p>
     {% endfor %}

@@ -28,12 +28,8 @@ db.create_all()
 @app.route('/')
 def show_title_get():
 
-    
-
     return redirect("/register")
 
-  
-  
   
 @app.route('/register', methods=["GET", "POST"])
 def add_user_form():
@@ -52,15 +48,12 @@ def add_user_form():
     
             db.session.add(user)
             db.session.commit()
-
             session['username'] = user.username
 
-            
             return redirect(f"/users/{user.username}")
+    else:        
+        return render_template("add_user.html", form=form, logged_user=user_logged_in())
 
-    else:
-        
-        return render_template("add_user.html", form=form)
 
 @app.route('/users/<username>')
 def logged_in_user_info(username):
@@ -70,10 +63,25 @@ def logged_in_user_info(username):
     if(session.get('username', None) == username): #makes sure only logged in user can see own info
         flash('You made it')
         user = User.query.filter_by(username=session['username']).first()
-        return render_template('loggedinuser_info.html', user=user)
+        return render_template('loggedinuser_info.html', user=user, logged_user=user_logged_in())
     else:
         flash("You aren't allowed to be here")
         return redirect('/')
+
+@app.route('/users/<username>/delete', methods=["POST"])
+def delete_user(username):
+    """Remove the user from the database """
+    
+    if session['username'] and session['username'] == username:
+        user = User.query.filter_by(username=username).first()
+        db.session.delete(user)
+        db.session.commit()
+        session.clear()
+        return redirect('/')
+    else:
+        flash(f"You can't delete someone else's account!")
+        return redirect('/')
+
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -97,6 +105,23 @@ def login():
         
         return render_template("login.html", form=form)
     
+@app.route('/users/<username>/feedback/add', methods=["GET", "POST"])
+def add_feedback(username):
+    """add fedback route"""
+
+    form = AddFeedbackForm()
+
+    if form.validate_on_submit() and user_logged_in():
+        data = {field: val for field, val in form.data.items() if field != "csrf_token"}
+        feedback = Feedback(**data, username=user_logged_in())
+        db.session.add(feedback)
+        db.session.commit()
+
+        return redirect(f"/users/{user_logged_in()}")
+    else:
+        return render_template('add_feedback.html', form=form, logged_user=user_logged_in())
+
+
 @app.route('/feedback/<int:feedback_id>/update', methods=["GET", "POST"])
 def edit_feedback(feedback_id):
 
@@ -126,10 +151,10 @@ def edit_feedback(feedback_id):
 
     else:
         
-        return render_template("edit_feedback.html", form=form, feedback_id=feedback_id)
+        return render_template("edit_feedback.html", form=form, feedback_id=feedback_id, logged_user=user_logged_in())
     
 
-# if request.method == 'GET'
+
 
 @app.route('/feedback/<int:feedback_id>/delete',methods=["POST"])
 def delete_feedback(feedback_id):
@@ -144,7 +169,7 @@ def delete_feedback(feedback_id):
         db.session.delete(feedback_to_del)
         db.session.commit()
 
-        return render_template('loggedinuser_info.html', user=user)
+        return render_template('loggedinuser_info.html', user=user, logged_user=user_logged_in())
     else:
         flash("You aren't allowed to be deleting this post")
         return redirect('/')
@@ -156,3 +181,10 @@ def logout():
     session.clear()
 
     return redirect("/")
+
+
+def user_logged_in():
+    """check if user logged in
+        returns username as a string if in session and None if not
+    """
+    return session.get('username', None)

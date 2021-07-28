@@ -43,8 +43,16 @@
             <br>
             <br>
         {% endfor %}
+        <div>
+            <form action="/users/{{logged_user}}/feedback/add" method="GET"><button type="submit">Add Feedback</button></form>
+        </div>
     </div>    
 </section>
 {% endif %}
 
+<section id="delete-user">
+    <form action="/users/{{logged_user}}/delete" method="POST">
+        <button type="submit">DELETE MY ACCOUNT</button> 
+    </form>
+</section>
 {% endblock %}
